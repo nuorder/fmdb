@@ -833,8 +833,12 @@ static int FMDBDatabaseBusyHandler(void *f, int count) {
         for (NSString *dictionaryKey in [dictionaryArgs allKeys]) {
             
             // Prefix the key with a colon.
-            NSString *parameterName = [[NSString alloc] initWithFormat:@":%@", dictionaryKey];
-            
+
+            char *buffer;
+            asprintf(&buffer, ":%s", [dictionaryKey UTF8String]);
+            NSString *parameterName = [NSString stringWithCString:buffer encoding:NSUTF8StringEncoding];
+            free(buffer);
+
             if (_traceExecution) {
                 NSLog(@"%@ = %@", parameterName, [dictionaryArgs objectForKey:dictionaryKey]);
             }
